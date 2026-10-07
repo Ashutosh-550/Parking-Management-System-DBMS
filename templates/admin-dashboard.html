@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Parking Management System</title>
+</head>
+<body>
+
+    <h1>Admin Dashboard</h1>
+    <p>Welcome, Administrator!</p>
+
+    <!-- Section 1: Pending Parking Requests -->
+    <h2>Pending Parking Requests</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Vehicle Number</th>
+                <th>Vehicle Type</th>
+                <th>Entry Time</th>
+                <th>Expected Exit Time</th>
+                <th>Selected Slot</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+           {% for req in pending_requests %}
+            <tr>
+                <td>{{ req.request_id }}</td>
+                <td>{{ req.vehicle_number }}</td>
+                <td>{{ req.vehicle_type }}</td>
+                <td>{{ req.entry_datetime }}</td>
+                <td>{{ req.exit_datetime }}</td>
+                <td>{{ req.slot_id }}</td>
+                <td>
+                    <!-- Links styled as buttons pointing to your update-request route -->
+                    <a href="/update-request/{{ req.request_id }}/approve"><button type="button">Approve</button></a>
+                    <a href="/update-request/{{ req.request_id }}/reject"><button type="button">Reject</button></a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" align="center">No pending requests found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- Section 2: Active / Currently Occupied Spaces -->
+    <h2>Currently Occupied Parking Spaces</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Slot Number</th>
+                <th>Vehicle Number</th>
+                <th>Vehicle Type</th>
+                <th>Entry Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>S-103</td>
+                <td>KA-05-XY-9876</td>
+                <td>Car</td>
+                <td>2026-09-08 10:30 AM</td>
+            </tr>
+            <tr>
+                <td>S-104</td>
+                <td>MH-12-AB-5678</td>
+                <td>Bike</td>
+                <td>2026-09-08 11:15 AM</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <!-- Navigation / Logout -->
+    <p> <a href="admin-enter.html">Logout</a> </p>
+      <p> <a href="login.html">Back to Main Dashboard</a> </p>
+      <p> <a href="admin_exit.html">Vehicle Exit/ Collect Fee</a>
+    </p>
+
+</body>
+</html>

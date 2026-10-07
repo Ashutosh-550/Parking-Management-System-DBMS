@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parking Request Status</title>
+</head>
+<body>
+
+    <h1>Parking Request Status</h1>
+    <p>Check the live status of your parking request below:</p>
+
+    <!-- Status Check Form -->
+    <form action="/ticket-status.html" method="GET">
+        <div>
+            <label for="search_vehicle">Enter Vehicle Number:</label><br>
+            <input type="text" id="search_vehicle" name="search_vehicle" required placeholder="e.g., DL-01-AB-1234">
+            <button type="submit">Check Status</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <!-- Status Results Section -->
+    <h2>Request Status Results</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Request ID</th>
+                <th>Vehicle Number</th>
+                <th>Selected Slot</th>
+                <th>Status</th>
+                <th>Message / Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Example 1: Approved -->
+            <tr>
+                <td>REQ-001</td>
+                <td>DL-01-AB-1234</td>
+                <td>S-101</td>
+                <td><span style="color: green;"><strong>Approved</strong></span></td>
+                <td>Slot assigned successfully! You may park your vehicle.</td>
+            </tr>
+            <!-- Example 2: Pending -->
+            <tr>
+                <td>REQ-002</td>
+                <td>MH-12-AB-5678</td>
+                <td>S-102</td>
+                <td><span style="color: orange;"><strong>Pending</strong></span></td>
+                <td>Waiting for admin review... Please check back later.</td>
+            </tr>
+            <!-- Example 3: Rejected -->
+            <tr>
+                <td>REQ-003</td>
+                <td>KA-05-XY-9876</td>
+                <td>S-105</td>
+                <td><span style="color: red;"><strong>Rejected</strong></span></td>
+                <td>
+                    Slot already taken or invalid request.<br>
+                    <a href="parking-request.html"><strong>Try another slot</strong></a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <!-- Navigation -->
+    <p>
+        <a href="user-enter.html">Back to Vehicle Entry</a> | 
+        <a href="login.html">Back to Main Dashboard</a>
+    </p>
+
+</body>
+</html>

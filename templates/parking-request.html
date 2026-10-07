@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parking Request & Status</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Full screen flex container dividing into left and right */
+        .page-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Left side container holding all the text and forms */
+        .form-side {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            max-width: 470px;
+        }
+
+        /* Right side container displaying the image */
+        .image-side {
+            flex: 1;
+            background-image: url("{{ url_for('static', filename='parking_bg.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        /* Form styling adjustments */
+        h1 {
+            font-size: 24px;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            margin-top: 25px;
+        }
+
+        input[type="text"], select {
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            background-color: #0f4c81;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1b6ca8;
+        }
+
+        a {
+            color: #0f4c81;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <!-- Left Side: Form and Content -->
+    <div class="form-side">
+    <h1>Parking Assignment & Status</h1>
+
+    <!-- Parking Request Form to Admin -->
+    <h2>New Parking Request Form</h2>
+    <form action="/parking-request.html" method="POST">
+        <div>
+            <label>Entry Date and Time:</label><br>
+            <input type="date" id="entry_date" name="entry_date" required>
+            <input type="time" id="entry_time" name="entry_time" required>
+        </div>
+        <br>
+        <div>
+            <label>Expected Exit Date and Time:</label><br>
+            <input type="date" id="exit_date" name="exit_date" required>
+            <input type="time" id="exit_time" name="exit_time" required>
+        </div>
+        <br>
+        <div>
+            <label for="phone_number">Contact Number:</label><br>
+            <input type="text" id="phone_number" name="phone_number" required placeholder="eg-1234567890">
+        </div>
+        <br>
+        <div>
+            <label for="parking_space">Select Available Parking Space:</label><br>
+            <div>
+            <select id="parking_space" name="parking_space" required>
+                <option value="" disabled selected>-- Select an available slot --</option>
+                {% for slot in available_slots %}
+                <option value="{{ slot.slot_id }}">Slot {{ slot.slot_id }} (Floor {{ slot.floor }} - {{ slot.vehicle_type }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        </div>
+        <br>
+        <div>
+            <button type="submit">Submit Request & Generate Ticket</button>
+        </div>
+    </form>
+
+    <hr>
+    <!-- List of Filled Spaces -->
+    <h2>Currently Occupied Parking Spaces</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Slot Number</th>
+                <th>Vehicle Type</th>
+                <th>Entry Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>S-103</td>
+                <td>Car</td>
+                <td>2026-09-08 10:30 AM</td>
+            </tr>
+            <tr>
+                <td>S-104</td>
+                <td>Bike</td>
+                <td>2026-09-08 11:15 AM</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+ 
+    <p>
+        <a href="user-enter.html">Back to Vehicle Entry</a> | 
+        <a href="login.html">Back to Main Dashboard</a>
+    </p>
+</div>
+
+    <!-- Right Side: Image Display -->
+    <div class="image-side"></div>
+</div>
+</body>
+</html>

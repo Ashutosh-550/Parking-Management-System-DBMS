@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Quick Vehicle Scan</title>
+    <!-- Include Tesseract.js for optical character recognition (OCR) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@v5/dist/tesseract.min.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-container {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), 
+                      url("{{ url_for('static', filename='parking_bg.jpg') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+        }
+
+        .form-side {
+            flex: 1;
+            padding: 40px;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            max-width: 600px;
+            background-color: transparent;
+        }
+
+        .image-side {
+            flex: 1;
+            background-image: url("{{ url_for('static', filename='prices.jpg') }}");
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            background-color: transparent;
+        }
+
+        h1 {
+            color: #162447;
+            margin-top: 0;
+            font-size: 24px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        /* Camera live preview window */
+        #camera-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 15px;
+            display: none; /* Hidden until camera is started */
+        }
+
+        video {
+            width: 100%;
+            border-radius: 4px;
+            background: #000;
+        }
+
+        .cam-btn {
+            background-color: #48bfe3;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+         button[type="submit"] {
+            background-color: #0f4c81;
+            color: white;
+            border: none;
+            padding: 13px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s ease;
+        } 
+
+        .back-link {
+            display: block;
+            margin-top: 15px;
+            color: #1c1f22;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        #status-msg {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+    <!-- Left Side: Admin Form & Camera Feed -->
+    <div class="form-side">
+        <h1>Automatic Number Plate Scan</h1>
+        <p style="color: #666; margin-bottom: 15px;">Activate your phone camera to scan single-line or stacked license plates automatically.</p>
+
+        <!-- Camera Control Button -->
+        <button type="button" class="cam-btn" id="start-cam-btn" onclick="startCamera()">Open Phone Camera</button>
+
+        <!-- Live Camera View -->
+        <div id="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <button type="button" class="cam-btn" style="background-color: #d9534f; margin-top: 10px;" onclick="captureAndScan()">Capture & Read Plate</button>
+        </div>
+
+        <div id="status-msg"></div>
+
+        <!-- Hidden canvas for capturing video frame -->
+        <canvas id="canvas" style="display:none;"></canvas>
+
+        <form action="/admin/scan-entry" method="POST">
+            <div>
+                <label for="vehicle_number">Scanned License Plate Number:</label>
+                <input type="text" id="vehicle_number" name="vehicle_number" required placeholder="e.g., PB-10-GN-4497" autocomplete="off" autocapitalize="characters">
+            </div>
+            
+            <div>
+                <label for="vehicle_type">Select Vehicle Type:</label>
+                <select id="vehicle_type" name="vehicle_type" required>
+                    <option value="" disabled selected>-- Select type --</option>
+                    <option value="Bike">Bike</option>
+                    <option value="Car">Car</option>
+                    <option value="Truck">Truck</option>
+                </select>
+            </div>
+            
+            <div>
+                <button type="submit">Assign Slot & Print Slip</button>
+            </div>
+        </form>
+
+        <a href="/login.html" class="back-link">Back to Dashboard</a>
+    </div>
+
+    <!-- Right Side: Background Image -->
+    <div class="image-side"></div>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const cameraContainer = document.getElementById('camera-container');
+    const startCamBtn = document.getElementById('start-cam-btn');
+    const vehicleInput = document.getElementById('vehicle_number');
+    const statusMsg = document.getElementById('status-msg');
+    let mediaStream = null;
+
+    async function startCamera() {
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' }
+            });
+            video.srcObject = mediaStream;
+            cameraContainer.style.display = 'block';
+            startCamBtn.style.display = 'none';
+            statusMsg.innerText = "Camera active. Point at the license plate and click Capture.";
+        } catch (err) {
+            console.error("Camera access error:", err);
+            alert("Could not access camera. Please ensure permissions are granted.");
+        }
+    }
+
+    // Enhanced parser handling single-line & stacked multi-line plate formats (e.g., PB-10-GN-4497)
+function formatLicensePlate(rawText) {
+    // Remove "IND", spaces, and special characters
+    let clean = rawText.replace(/IND/g, '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    
+    // If OCR mistakenly added extra characters at the start (like "WR1"), 
+    // find where the standard state code (2 letters + 2 numbers) begins and slice from there
+    let standardRegEx = /([A-Z]{2}[0-9]{2}[A-Z0-9]{5,6})/;
+    let found = clean.match(standardRegEx);
+    
+    if (found) {
+        clean = found[1]; // Extracts just the valid plate sequence, ignoring leading noise like "WR1"
+    }
+
+    // Match and format into AB-01-CD-2345
+    let match = clean.match(/^([A-Z]{2})([0-9]{2})([A-Z]{1,3})([A-Z0-9]{4})$/);
+    if (match) {
+        return `${match[1]}-${match[2]}-${match[3]}-${match[4]}`;
+    }
+    
+    // Fallback chunking if needed
+    if (clean.length >= 9) {
+        let letters1 = clean.substring(0, 2);
+        let digits1 = clean.substring(2, 4);
+        let rest = clean.substring(4);
+        let letters2 = rest.substring(0, rest.length - 4);
+        let digits2 = rest.substring(rest.length - 4);
+        return `${letters1}-${digits1}-${letters2}-${digits2}`;
+    }
+    
+    return clean;
+}
+
+    function captureAndScan() {
+        statusMsg.innerText = "Scanning plate text and formatting...";
+        
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const imageDataUrl = canvas.toDataURL('image/png');
+
+        Tesseract.recognize(
+            imageDataUrl,
+            'eng',
+            { logger: m => console.log(m) }
+        ).then(({ data: { text } }) => {
+            let formattedPlate = formatLicensePlate(text);
+            
+            if (formattedPlate.length >= 6) {
+                vehicleInput.value = formattedPlate;
+                statusMsg.innerText = "Plate scanned and formatted successfully!";
+            } else {
+                statusMsg.innerText = "Could not parse clearly. Please adjust or type manually.";
+            }
+
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            cameraContainer.style.display = 'none';
+            startCamBtn.style.display = 'block';
+        }).catch(err => {
+            console.error(err);
+            statusMsg.innerText = "OCR scanning failed. Please type manually.";
+            startCamBtn.style.display = 'block';
+            cameraContainer.style.display = 'none';
+        });
+    }
+</script>
+
+</body>
+</html>

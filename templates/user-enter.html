@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Park Vehicle - Parking Management System</title>
+    <style>
+     .centered-container{
+            text-align: center;
+            padding: 20px;
+            background-color: #f3f2f2; /* Optional: adds a light background to see the box */
+            border: 5px solid #060606;     /* Optional: adds a subtle border */
+            border-radius: 10px;        
+        }
+       .bg-image-container {
+            background-image: url("{{ url_for('static', filename='parking_bgp2.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<div class="bg-image-container">
+<div class="centered-container">
+    <h1>Park a Vehicle</h1>
+    <p>Enter your vehicle details to get a parking slot:</p>
+
+    <form action="/parking-request.html" method="POST">
+        <div>
+            <label for="vehicle_number">Vehicle Number / License Plate:</label><br>
+            <input type="text" id="vehicle_number" name="vehicle_number" required placeholder="e.g., DL-01-AB-1234">
+        </div>
+        <br>
+        <div>
+            <label for="vehicle_type">Vehicle Type:</label><br>
+            <select id="vehicle_type" name="vehicle_type" required>
+                <option value="" disabled selected>Select vehicle type</option>
+                <option value="bike">Bike</option>
+                <option value="car">Car</option>
+                <option value="truck">Truck</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <button type="submit">Proceed to Slot Assignment</button>
+        </div>
+    </form>
+
+    <br>
+
+    <p>
+        <a href="login.html">Back to Main Dashboard</a>
+    </p>
+</div>
+</div>
+</body>
+</html>

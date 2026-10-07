@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Parking Request & Status</title>
+</head>
+<body>
+
+    <h1>Parking Assignment & Status</h1>
+
+    <!-- Section 1: Parking Request Form to Admin -->
+    <h2>New Parking Request Form</h2>
+    <form action="ticket-confirmation.html" method="POST">
+        <div>
+            <label for="entry_time">Entry Time:</label><br>
+            <input type="datetime-local" id="entry_time" name="entry_time" required>
+        </div>
+        <br>
+        <div>
+            <label for="exit_time">Expected Exit Time:</label><br>
+            <input type="datetime-local" id="exit_time" name="exit_time" required>
+        </div>
+        <br>
+
+        <!-- Available Spaces List with Radio Buttons -->
+        <div>
+            <label><strong>Select an Available Parking Space from the list below:</strong></label><br><br>
+            <ul>
+                <li>
+                    <input type="radio" id="slot1" name="parking_space" value="S-101" required>
+                    <label for="slot1">Slot S-101 (Floor 1 - Car)</label>
+                </li>
+                <li>
+                    <input type="radio" id="slot2" name="parking_space" value="S-102">
+                    <label for="slot2">Slot S-102 (Floor 1 - Bike)</label>
+                </li>
+                <li>
+                    <input type="radio" id="slot3" name="parking_space" value="S-105">
+                    <label for="slot3">Slot S-105 (Floor 2 - Truck)</label>
+                </li>
+            </ul>
+        </div>
+        <br>
+
+        <div>
+            <button type="submit">Submit Request & Generate Ticket</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <!-- Section 2: List of Filled (Occupied) Spaces -->
+    <h2>Currently Occupied Parking Spaces</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Slot Number</th>
+                <th>Vehicle Type</th>
+                <th>Entry Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>S-103</td>
+                <td>Car</td>
+                <td>2026-09-08 10:30 AM</td>
+            </tr>
+            <tr>
+                <td>S-104</td>
+                <td>Bike</td>
+                <td>2026-09-08 11:15 AM</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <!-- Navigation -->
+    <p>
+        <a href="user-enter.html">Back to Vehicle Entry</a> | 
+        <a href="login.html">Back to Main Dashboard</a>
+    </p>
+
+</body>
+</html>

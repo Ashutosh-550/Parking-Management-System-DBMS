@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Check Ticket Status</title>
+    <style>
+        .bg-image-container {
+            background-image: url("{{ url_for('static', filename='parking_bgp4.jpg') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .centered-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            max-width: 550px;
+            width: 90%;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-top: 10px; /* Adjust this value (e.g., 5px or 0px) to push it higher up */
+        }
+    </style>
+</head>
+<body>
+<div class="bg-image-container">
+    <div class="centered-container">
+    <center>
+        <h1>Check Parking Request Status</h1>
+        <p>Enter your vehicle number to view your live ticket status:</p>
+
+        <!-- Status Search Form -->
+        <form action="/ticket-status.html" method="GET">
+            <table border="0" cellpadding="5">
+                <tr>
+                    <td>Vehicle Number:</td>
+                    <td><input type="text" name="search_vehicle" required placeholder="e.g., DL-01-AB-1234"></td>
+                    <td><button type="submit">Check Status</button></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr width="50%">
+
+        <!-- Results Table -->
+        <h2>Status Results</h2>
+        <table border="1" cellpadding="10" cellspacing="0">
+            <tr>
+                <th>Request ID</th>
+                <th>Vehicle Number</th>
+                <th>Selected Slot</th>
+                <th>Status</th>
+                <th>Message</th>
+            </tr>
+            {% for req in requests_list %}
+            <tr>
+                <td>{{ req.request_id }}</td>
+                <td>{{ req.vehicle_number }}</td>
+                <td>{{ req.slot_id }}</td>
+                <td>
+                    {% if req.status == 'Approved' %}
+                        <span style="color: green;"><strong>Approved</strong></span>
+                    {% elif req.status == 'Rejected' %}
+                        <span style="color: red;"><strong>Rejected</strong></span>
+                    {% else %}
+                        <span style="color: orange;"><strong>Pending</strong></span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if req.status == 'Approved' %}
+                        Slot assigned successfully! You may park your vehicle.
+                    {% elif req.status == 'Rejected' %}
+                        Request rejected. <a href="/parking-request.html">Try another slot</a>
+                    {% else %}
+                        Waiting for admin review... Please check back later.
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="5" align="center">No requests found for this vehicle number.</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <p style="margin-top: 20px;">
+            <a href="/parking-request.html">Back to Request Slot</a> | 
+            <a href="/login.html">Back to Main Dashboard</a>
+        </p>
+    </center>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vehicle Exit & Payment Portal</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f9; text-align: center; margin-top: 40px; }
+        .container { background: white; padding: 30px; width: 450px; margin: 0 auto; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0,0,0,0.1); text-align: left; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; font-size: 16px; }
+        button { background-color: #e76f51; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #d65f3f; }
+        .success-box { background: #e9f5ed; border: 1px solid #c3e6cb; padding: 15px; border-radius: 4px; margin-top: 15px; }
+        .fee-amount { font-size: 24px; color: #2b9348; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Vehicle Exit & Payment</h2>
+    
+    <form action="/admin/exit" method="POST">
+        <label for="search_query"><strong>Enter Vehicle Number or Slot ID:</strong></label>
+        <input type="text" id="search_query" name="search_query" required placeholder="e.g., DL-01-AB-1234 or S-101" autocomplete="off">
+        <button type="submit" style="background-color: #2b9348;">Calculate Fee</button>
+    </form>
+
+    {% if parking %}
+    <div class="success-box">
+        <h3>Session Details</h3>
+        <p><strong>Vehicle Number:</strong> {{ parking.vehicle_number }}</p>
+        <p><strong>Vehicle Type:</strong> {{ parking.vehicle_type }}</p>
+        <p><strong>Slot ID:</strong> {{ parking.slot_id }}</p>
+        <p><strong>Entry Time:</strong> {{ parking.entry_datetime }}</p>
+        <p><strong>Parked Duration:</strong> ~{{ duration }} hours</p>
+        <hr>
+        <p><strong>Total Amount to Pay:</strong></p>
+        <div class="fee-amount">Rs. {{ fee }}</div>
+        
+        <form action="/admin/process-exit/{{ parking.request_id }}" method="POST" style="margin-top: 15px;">
+            <input type="hidden" name="total_fee" value="{{ fee }}">
+            <button type="submit">Confirm Payment & Free Slot</button>
+        </form>
+    </div>
+    {% elif request.method == 'POST' %}
+    <p style="color: red; margin-top: 15px;">No active parking session found for that vehicle or slot.</p>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/admin-dashboard.html">Back to Admin Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>
